@@ -11,7 +11,6 @@ nro(8).
 pieza(torre, negra, 2,1).
 pieza(torre, negra, 3,4).
 pieza(reina, negra, 5,5).
-pieza(reina, negra, 2,1).
 pieza(reina,negra,10,10).
 
 % Encontrar los casilleros libres, es decir las posiciones del tablero donde no hay ninguna ficha
@@ -39,9 +38,19 @@ infoErronea(UbiY, UbiX) :-
 % (No hace falta contemplar que tenga el camino libre, sólo el casillero de llegada)
 % No se puede mover al mismo casillero donde está originalmente la torre. 
 
-moverTorre(UbiYActual,UbiXActual,UbiYDestino,UbiXDestino):-
-    dif((UbiXActual, UbiYActual), (UbiXDestino, UbiYDestino)),
-    nro(UbiXActual),nro(UbiYActual),
-    nro(UbiXDestino),nro(UbiYDestino),
-    (UbiYActual = UbiYDestino; UbiXActual = UbiXDestino),
-    not(pieza(_, Color, UbiYDestino, UbiXDestino)).
+casilleroLibreColor(Color,UbiY,UbiX):-
+    nro(UbiX),
+    nro(UbiY),
+    not(pieza(_,Color,UbiY,UbiX)).
+
+moverTorre(UbiYActual, UbiXActual, UbiYDestino, UbiXDestino):-
+    pieza(torre,Color,UbiYActual,UbiXActual), %Verifica si la torre existe y de que color es
+    UbiYDestino \= UbiYActual, % Verifica si se mueve verticalmente
+    casilleroLibreColor(Color,UbiYDestino,UbiXDestino), %verifica que el casillero de llegada no haya una pieza de su color
+    not(infoErronea(UbiYDestino, UbiXDestino)). %verifica si es un movimiento erroneo.
+
+moverTorre(UbiYActual, UbiXActual, UbiYDestino, UbiXDestino):-
+    pieza(torre,Color,UbiYActual,UbiXActual),
+    UbiXDestino \= UbiXActual, % Verifica si se mueve horizontalmente
+    casilleroLibreColor(Color,UbiYDestino,UbiXDestino),
+    not(infoErronea(UbiYDestino, UbiXDestino)).
