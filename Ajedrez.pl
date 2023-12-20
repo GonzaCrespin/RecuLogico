@@ -11,3 +11,10 @@ nro(8).
 pieza(torre, negra, 2,1).
 pieza(torre, negra, 3,4).
 pieza(reina, negra, 5,5).
+
+% Encontrar los casilleros libres, es decir las posiciones del tablero donde no hay ninguna ficha
+
+casilleroLibre(UbiY,UbiX):-
+    nro(UbiX),
+    nro(UbiY),
+    not(pieza(_,_,UbiY,UbiX)).
