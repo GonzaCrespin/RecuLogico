@@ -66,10 +66,6 @@ torrePuedeComer(UbiY, UbiX, UbiYDestino, UbiXDestino) :-
     pieza(_,OtroColor,UbiYDestino,UbiXDestino),
     Color \= OtroColor.
 
-torrePuedeComerEn(UbiY,UbiX,PosiblesComer):-
-    pieza(torre, Color, UbiY, UbiX),
-    findall((UbiYDestino, UbiXDestino), torrePuedeComer(UbiY, UbiX, UbiYDestino, UbiXDestino), PosiblesComer).
-
 torrePuedeComerEnTodosLosLugares(UbiY, UbiX) :-
     pieza(torre, Color, UbiY, UbiX),
     lugaresPosibles(UbiY, UbiX, PosiblesMovimientos),
