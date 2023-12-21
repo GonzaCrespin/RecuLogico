@@ -44,21 +44,35 @@ casilleroLibreColor(Color,UbiY,UbiX):-
     nro(UbiY),
     not(pieza(_,Color,UbiY,UbiX)).
 
-moverTorre(UbiYActual, UbiXActual, UbiYDestino, UbiXDestino):-
-    pieza(torre,Color,UbiYActual,UbiXActual), %Verifica si la torre existe y de que color es
-    UbiYDestino \= UbiYActual, % Verifica si se mueve verticalmente
-    casilleroLibreColor(Color,UbiYDestino,UbiXDestino), %verifica que el casillero de llegada no haya una pieza de su color
-    not(infoErronea(UbiYDestino, UbiXDestino)). %verifica si es un movimiento erroneo.
+moverTorre(UbiY, UbiX, UbiYDestino, UbiXDestino) :-
+    pieza(torre,Color,UbiY,UbiX),
+    (UbiYDestino = UbiY, nro(UbiXDestino), UbiXDestino \= UbiX),
+    casilleroLibreColor(Color,UbiYDestino,UbiXDestino).
 
-moverTorre(UbiYActual, UbiXActual, UbiYDestino, UbiXDestino):-
-    pieza(torre,Color,UbiYActual,UbiXActual),
-    UbiXDestino \= UbiXActual, % Verifica si se mueve horizontalmente
-    casilleroLibreColor(Color,UbiYDestino,UbiXDestino),
-    not(infoErronea(UbiYDestino, UbiXDestino)).
+moverTorre(UbiY, UbiX, UbiYDestino, UbiXDestino) :-
+    pieza(torre,Color,UbiY,UbiX),
+    (UbiXDestino = UbiX, nro(UbiYDestino), UbiYDestino \= UbiY),
+    casilleroLibreColor(Color,UbiYDestino,UbiXDestino).
 
 % utilizando el predicado de mover la torre, averiguar si un jugador tiene alguna torre con la que solo puede "comer"
 
-torrePuedeComer(UbiYActual, UbiXActual, UbiYDestino, UbiXDestino):-
-    pieza(torre,Color,UbiYActual,UbiXActual),
-    moverTorre(UbiYActual, UbiXActual, UbiYDestino, UbiXDestino),
-    pieza(_,OtroColor,UbiYDestino,UbiXDestino).
+lugaresPosibles(UbiY, UbiX, PosiblesMovimientos) :-
+    pieza(torre, Color, UbiY, UbiX),
+    findall((UbiYDestino, UbiXDestino), moverTorre(UbiY, UbiX, UbiYDestino, UbiXDestino), PosiblesMovimientos).
+
+torrePuedeComer(UbiY, UbiX, UbiYDestino, UbiXDestino) :-
+    pieza(torre,Color,UbiY,UbiX),
+    moverTorre(UbiY, UbiX, UbiYDestino, UbiXDestino),
+    pieza(_,OtroColor,UbiYDestino,UbiXDestino),
+    Color \= OtroColor.
+
+torrePuedeComerEn(UbiY,UbiX,PosiblesComer):-
+    pieza(torre, Color, UbiY, UbiX),
+    findall((UbiYDestino, UbiXDestino), torrePuedeComer(UbiY, UbiX, UbiYDestino, UbiXDestino), PosiblesComer).
+
+torrePuedeComerEnTodosLosLugares(UbiY, UbiX) :-
+    pieza(torre, Color, UbiY, UbiX),
+    lugaresPosibles(UbiY, UbiX, PosiblesMovimientos),
+    forall(member((NuevoUbiY, NuevoUbiX), PosiblesMovimientos),
+        (moverTorre(UbiY, UbiX, NuevoUbiY, NuevoUbiX),
+            torrePuedeComer(UbiY, UbiX, NuevoUbiY, NuevoUbiX))).
