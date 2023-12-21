@@ -12,6 +12,7 @@ pieza(torre, negra, 2,1).
 pieza(torre, negra, 3,4).
 pieza(reina, negra, 5,5).
 pieza(reina,negra,10,10).
+pieza(alfil,blanca,2,5).
 
 % Encontrar los casilleros libres, es decir las posiciones del tablero donde no hay ninguna ficha
 
@@ -54,3 +55,10 @@ moverTorre(UbiYActual, UbiXActual, UbiYDestino, UbiXDestino):-
     UbiXDestino \= UbiXActual, % Verifica si se mueve horizontalmente
     casilleroLibreColor(Color,UbiYDestino,UbiXDestino),
     not(infoErronea(UbiYDestino, UbiXDestino)).
+
+% utilizando el predicado de mover la torre, averiguar si un jugador tiene alguna torre con la que solo puede "comer"
+
+torrePuedeComer(UbiYActual, UbiXActual, UbiYDestino, UbiXDestino):-
+    pieza(torre,Color,UbiYActual,UbiXActual),
+    moverTorre(UbiYActual, UbiXActual, UbiYDestino, UbiXDestino),
+    pieza(_,OtroColor,UbiYDestino,UbiXDestino).
